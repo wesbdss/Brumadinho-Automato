@@ -1,0 +1,136 @@
+var c = document.getElementById("screen");
+var ctx = c.getContext("2d");
+//matriz[x*matrix+y]
+lamainfo = {	
+	'alturaLama': 400,
+	'alturaTerreno': 400
+};
+
+
+
+function gerarMapa(matrix,matriy,values){ //tamanho da matriz x & tamanho da matriz y & valores
+	var tamx=20, tamy=20;//tamanho do retangulo
+	mat = [matrix*matriy];//matriz a ser executada
+	mat = values;//valores da matriz
+	if(mat.length != matrix*matriy){
+		console.log("Valores Não Compatíveis com o tamanho da matrix");
+		console.log("mat: "+mat);
+		console.log("values: "+values);
+		return -1;
+	}
+
+	c.width = (tamx+1) * matrix;//quantidade de quadrados
+	c.height = (tamy+1) * matriy;//quantidade de quadrados
+	console.log("Valores: "+mat);
+	var x=0,y=0;
+	for (var i = 0; i < c.width; i=i+tamx+1) {
+		for (var j = 0; j < c.height; j=j+tamy+1) {
+			ctx.fillStyle = "#FF0000";
+			if(mat[x*matrix+y] < 0) return -1;
+			if(mat[x*matrix+y] <= 400) ctx.fillStyle ="#000202";
+			else if(mat[x*matrix+y] <= 730) ctx.fillStyle ="#00686a";
+			else if(mat[x*matrix+y] <= 732) ctx.fillStyle ="#00a3a3";
+			else if(mat[x*matrix+y] <= 734) ctx.fillStyle ="#00d9d8";
+			else if(mat[x*matrix+y] <= 737) ctx.fillStyle ="#00eac4";
+			else if(mat[x*matrix+y] <= 741) ctx.fillStyle ="#00d482";
+			else if(mat[x*matrix+y] <= 746) ctx.fillStyle ="#00e65b";
+			else if(mat[x*matrix+y] <= 752) ctx.fillStyle ="#00ee2e";
+			else if(mat[x*matrix+y] <= 760) ctx.fillStyle ="#02e21b";
+			else if(mat[x*matrix+y] <= 770) ctx.fillStyle ="#46eb1c";
+			else if(mat[x*matrix+y] <= 780) ctx.fillStyle ="#89fe1e";
+			else if(mat[x*matrix+y] <= 793) ctx.fillStyle ="#c4fe1e";
+			else if(mat[x*matrix+y] <= 807) ctx.fillStyle ="#fdfe1e";
+			else if(mat[x*matrix+y] <= 822) ctx.fillStyle ="#fec315";
+			else if(mat[x*matrix+y] <= 840) ctx.fillStyle ="#fe880c";
+			else if(mat[x*matrix+y] <= 859) ctx.fillStyle ="#fe4d05";
+			else if(mat[x*matrix+y] <= 880) ctx.fillStyle ="#fe1402";
+			else if(mat[x*matrix+y] <= 903) ctx.fillStyle ="#fe0326";
+			else if(mat[x*matrix+y] <= 928) ctx.fillStyle ="#fe0561";
+			else if(mat[x*matrix+y] <= 955) ctx.fillStyle ="#fe099b";
+			else if(mat[x*matrix+y] <= 985) ctx.fillStyle ="#ff0dd6";
+			else if(mat[x*matrix+y] <= 1016) ctx.fillStyle ="#ff1cfd";
+			else if(mat[x*matrix+y] <= 1050) ctx.fillStyle ="#ff50fd";
+			else if(mat[x*matrix+y] <= 1086) ctx.fillStyle ="#ff89fd";
+			else if(mat[x*matrix+y] <= 1124) ctx.fillStyle ="#ffc3fe";
+			else if(mat[x*matrix+y] <= 1165) ctx.fillStyle ="#ffd9fe";
+			else if(mat[x*matrix+y] >= 1165) ctx.fillStyle ="#fefefe";
+			if(mat[x*matrix+y] == 0) ctx.fillStyle ="#CD661D";
+			if(mat[x*matrix+y] == 1) ctx.fillStyle ="#8B4513";
+
+			//Falta os especiais, casas, a represa e a lama campos neutros
+			ctx.fillRect(i, j, tamx, tamy);
+			x++;
+		}
+		y++;
+		x=0;
+	}
+}
+
+function movLama(matrix,matriy,matriz){
+	var novoMapa = matriz.slice();
+	//arrumar o fato de que cada lama não possui seu próprio valor , talvez fazer a média ajude
+	if(lamainfo.tamanhoTotal <= 0){
+		return -1;
+	}else{
+		for (var i = 0; i < matrix; i++){
+			for (var j = 0; j < matriy; j++){
+				if(matriz[i*matrix+j] == 1){
+					if(matriz[(i+1)*matrix+(j)] < lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i+1)*matrix+(j)] != 0 && matriz[(i+1)*matrix+(j)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j)]) + lamainfo.alturaLama;
+						novoMapa[(i+1)*matrix+(j)] = 1;
+					}
+					if(matriz[(i-1)*matrix+(j)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i-1)*matrix+(j)] != 0&& matriz[(i-1)*matrix+(j)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j)]) + lamainfo.alturaLama;
+						novoMapa[(i-1)*matrix+(j)] = 1;	
+					}
+					if(matriz[(i)*matrix+(j+1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i)*matrix+(j+1)] != 0&& matriz[(i)*matrix+(j+1)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i)*matrix+(j+1)]) + lamainfo.alturaLama;
+						novoMapa[(i)*matrix+(j+1)] = 1;
+					}
+					if(matriz[(i)*matrix+(j-1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i)*matrix+(j-1)] != 0&& matriz[(i)*matrix+(j-1)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i)*matrix+(j-1)]) + lamainfo.alturaLama;
+						novoMapa[(i)*matrix+(j-1)] = 1;
+					}
+					if(matriz[(i+1)*matrix+(j+1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i+1)*matrix+(j+1)] != 0&& matriz[(i+1)*matrix+(j+1)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j+1)]) + lamainfo.alturaLama;
+						novoMapa[(i+1)*matrix+(j+1)] = 1;	
+					}
+					if(matriz[(i-1)*matrix+(j+1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i-1)*matrix+(j+1)] != 0&& matriz[(i-1)*matrix+(j+1)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j+1)]) + lamainfo.alturaLama;
+						novoMapa[(i-1)*matrix+(j+1)] = 1;
+					}
+					if(matriz[(i-1)*matrix+(j-1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i-1)*matrix+(j-1)] != 0&& matriz[(i-1)*matrix+(j-1)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j-1)]) + lamainfo.alturaLama;
+						novoMapa[(i-1)*matrix+(j-1)] = 1;	
+					}
+					if(matriz[(i+1)*matrix+(j-1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i+1)*matrix+(j-1)] != 0&& matriz[(i+1)*matrix+(j-1)] != 1){
+						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j-1)]) + lamainfo.alturaLama;
+						novoMapa[(i+1)*matrix+(j-1)] = 1;
+					}
+					novoMapa[i*matrix+j] = 0;
+				}
+			}
+		}
+	}
+	return novoMapa;
+}
+
+function Main(){
+	mapax = 5;//tamanho das linhas linhas
+	mapay = 7;//tamanho das colunas
+	mapa = [1000,1000,1000,1000,1000,
+			1000,1000,1000,1000,1000,
+			1000,1,1,400,1000,
+			1000,400,400,400,1000,
+			1000,400,1000,1000,400,
+			1000,400,1000,1000,1000,
+			1000,1000,1000,1000,1000];
+	if(gerarMapa(mapax,mapay,mapa) == -1){
+		return -1;
+	}
+	newmapa = movLama(mapax,mapay,mapa);
+	gerarMapa(mapax,mapay,newmapa);
+	newmapa = movLama(mapax,mapay,newmapa);
+	gerarMapa(mapax,mapay,newmapa);
+}
+Main();
