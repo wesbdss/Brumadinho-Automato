@@ -1,10 +1,20 @@
 var c = document.getElementById("screen");
 var ctx = c.getContext("2d");
 //matriz[x*matrix+y]
-lamainfo = {	
-	'alturaLama': 400,
-	'alturaTerreno': 400
+var lamainfo = {	
+	'alturaLama': 36,
+	'alturaTerreno': 800
 };
+
+var mapax = 5;//tamanho das linhas linhas
+var mapay = 7;//tamanho das colunas
+var mapa = [1000,1000,1000,1000,1000,
+		1000,1000,1000,1000,1000,
+		1000,1,1,700,1000,
+		1000,700,700,800,1000,
+		1000,800,1000,1000,800,
+		1000,800,1000,1000,1000,
+		1000,1000,1000,1000,1000];
 
 
 
@@ -68,6 +78,8 @@ function gerarMapa(matrix,matriy,values){ //tamanho da matriz x & tamanho da mat
 
 function movLama(matrix,matriy,matriz){
 	var novoMapa = matriz.slice();
+	var semocorrencias = true;
+	var media = 1,qtd = 1;//calcular a media da força da prox onda de lama
 	//arrumar o fato de que cada lama não possui seu próprio valor , talvez fazer a média ajude
 	if(lamainfo.tamanhoTotal <= 0){
 		return -1;
@@ -75,62 +87,92 @@ function movLama(matrix,matriy,matriz){
 		for (var i = 0; i < matrix; i++){
 			for (var j = 0; j < matriy; j++){
 				if(matriz[i*matrix+j] == 1){
+					semocorrencias = false;
 					if(matriz[(i+1)*matrix+(j)] < lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i+1)*matrix+(j)] != 0 && matriz[(i+1)*matrix+(j)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j)]) + lamainfo.alturaLama;
+						media = media + (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i+1)*matrix+(j)] = 1;
 					}
 					if(matriz[(i-1)*matrix+(j)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i-1)*matrix+(j)] != 0&& matriz[(i-1)*matrix+(j)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j)]) + lamainfo.alturaLama;
+						media = media + (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i-1)*matrix+(j)] = 1;	
 					}
 					if(matriz[(i)*matrix+(j+1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i)*matrix+(j+1)] != 0&& matriz[(i)*matrix+(j+1)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i)*matrix+(j+1)]) + lamainfo.alturaLama;
+						media = media +  (lamainfo.alturaTerreno - matriz[(i)*matrix+(j+1)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i)*matrix+(j+1)] = 1;
 					}
 					if(matriz[(i)*matrix+(j-1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i)*matrix+(j-1)] != 0&& matriz[(i)*matrix+(j-1)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i)*matrix+(j-1)]) + lamainfo.alturaLama;
+						media = media +  (lamainfo.alturaTerreno - matriz[(i)*matrix+(j-1)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i)*matrix+(j-1)] = 1;
 					}
 					if(matriz[(i+1)*matrix+(j+1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i+1)*matrix+(j+1)] != 0&& matriz[(i+1)*matrix+(j+1)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j+1)]) + lamainfo.alturaLama;
+						media = media + (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j+1)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i+1)*matrix+(j+1)] = 1;	
 					}
 					if(matriz[(i-1)*matrix+(j+1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i-1)*matrix+(j+1)] != 0&& matriz[(i-1)*matrix+(j+1)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j+1)]) + lamainfo.alturaLama;
+						media = media +  (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j+1)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i-1)*matrix+(j+1)] = 1;
 					}
 					if(matriz[(i-1)*matrix+(j-1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i-1)*matrix+(j-1)] != 0&& matriz[(i-1)*matrix+(j-1)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j-1)]) + lamainfo.alturaLama;
+						media = media +  (lamainfo.alturaTerreno - matriz[(i-1)*matrix+(j-1)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i-1)*matrix+(j-1)] = 1;	
 					}
 					if(matriz[(i+1)*matrix+(j-1)]< lamainfo.alturaLama+lamainfo.alturaTerreno && matriz[(i+1)*matrix+(j-1)] != 0&& matriz[(i+1)*matrix+(j-1)] != 1){
-						lamainfo.alturaLama = (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j-1)]) + lamainfo.alturaLama;
+						media = media +  (lamainfo.alturaTerreno - matriz[(i+1)*matrix+(j-1)]) + lamainfo.alturaLama;qtd++;
 						novoMapa[(i+1)*matrix+(j-1)] = 1;
 					}
 					novoMapa[i*matrix+j] = 0;
+					if(media/qtd !=1) lamainfo.alturaLama = media/qtd;
+					media = qtd = 1;
 				}
+
 			}
 		}
 	}
+	if(semocorrencias) alert("A lama não se move mais!! ");
 	return novoMapa;
 }
 
+var nextmapa;
 function Main(){
-	mapax = 5;//tamanho das linhas linhas
-	mapay = 7;//tamanho das colunas
-	mapa = [1000,1000,1000,1000,1000,
-			1000,1000,1000,1000,1000,
-			1000,1,1,400,1000,
-			1000,400,400,400,1000,
-			1000,400,1000,1000,400,
-			1000,400,1000,1000,1000,
-			1000,1000,1000,1000,1000];
 	if(gerarMapa(mapax,mapay,mapa) == -1){
 		return -1;
 	}
-	newmapa = movLama(mapax,mapay,mapa);
-	gerarMapa(mapax,mapay,newmapa);
-	newmapa = movLama(mapax,mapay,newmapa);
-	gerarMapa(mapax,mapay,newmapa);
+	var informes = document.getElementById("informes");
+	informes.innerHTML = "<strong>Informes</strong></br>Altura do terreno da Lama: "+lamainfo.alturaTerreno+"</br>Intensidade da Lama: "+lamainfo.alturaLama+" ";
+	nextmapa = mapa;
+	informes.innerHTML = informes.innerHTML+ "</br>";
+	for(var i=0; i<mapay; i++)
+	{
+	    for(var j=0; j<mapax; j++)
+	    {
+	        informes.innerHTML = informes.innerHTML + nextmapa[i*mapax+j]+ "  ";
+	        //document.getElementById("("+i+","+j+")").className = "";
+	        
+
+	    }
+	    informes.innerHTML=informes.innerHTML+"</br>";
+	}
 }
+
+function proximo(){
+	nextmapa = movLama(mapax,mapay,nextmapa);
+	if(gerarMapa(mapax,mapay,nextmapa) == -1){
+		alert("Ocorreu um erro");
+		return -1;
+	}
+	informes.innerHTML = "<strong>Informes</strong>" + "</br>Altura do terreno da Lama: "+lamainfo.alturaTerreno+"</br>Intensidade da Lama: "+lamainfo.alturaLama+"";
+	informes.innerHTML = informes.innerHTML+ "</br>";
+	for(var i=0; i<mapay; i++)
+	{
+	    for(var j=0; j<mapax; j++)
+	    {
+	        informes.innerHTML = informes.innerHTML + nextmapa[i*mapax+j]+ "  ";
+	        //document.getElementById("("+i+","+j+")").className = "";
+	        
+
+	    }
+	    informes.innerHTML=informes.innerHTML+"</br>";
+	}
+}
+
 Main();
